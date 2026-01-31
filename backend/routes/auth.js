@@ -1,27 +1,61 @@
-const router = require('express').Router();
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+const router = require("express").Router();
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-router.post('/register', async (req, res) => {
+// REGISTER
+router.post("/register", async (req, res) => {
   try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(req.body.password, salt);
-    const newUser = new User({ email: req.body.email, password: hashedPassword });
-    await newUser.save();
-    res.status(201).json("User registered");
-  } catch (err) { res.status(500).json(err); }
+    const { username, email, password } = req.body;
+
+    const exists = await User.findOne({ email });
+    if (exists)
+      return res.status(400).json({ msg: "User already exists" });
+
+    const hashed = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      username,
+      email,
+      password: hashed
+    });
+
+    res.status(201).json({ msg: "Account created successfully" });
+  } catch (err) {
+    res.status(500).json({ msg: "Registration failed" });
+  }
 });
 
-router.post('/login', async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
-  if (!user) return res.status(401).json("Wrong credentials!");
+// LOGIN
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-  const validPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!validPassword) return res.status(401).json("Wrong credentials!");
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(401).json({ msg: "Invalid credentials" });
 
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SEC, { expiresIn: "5d" });
-  res.status(200).json({ token, email: user.email });
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid)
+      return res.status(401).json({ msg: "Invalid credentials" });
+
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SEC,
+      { expiresIn: "3d" }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ msg: "Login failed" });
+  }
 });
 
 module.exports = router;

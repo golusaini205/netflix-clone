@@ -8,13 +8,29 @@ function Row({ title, fetchUrl, isLargeRow }) {
   const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
 
-  useEffect(() => {
-    async function fetchData() {
+useEffect(() => {
+  async function fetchData() {
+    try {
       const request = await axios.get(fetchUrl);
       setMovies(request.data.results);
+    } catch (err) {
+      console.error("TMDB Error:", err);
     }
-    fetchData();
-  }, [fetchUrl]);
+  }
+  fetchData();
+}, [fetchUrl]);
+useEffect(() => {
+  async function fetchData() {
+    try {
+      const request = await axios.get(fetchUrl);
+      setMovies(request.data.results);
+    } catch (err) {
+      console.error("TMDB Error:", err);
+    }
+  }
+  fetchData();
+}, [fetchUrl]);
+
 
   return (
     <div className="row ms-2">

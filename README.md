@@ -1,4 +1,4 @@
-## 🎬 MERN Netflix Clone
+## MERN Netflix Clone
 
 Full-stack Netflix clone using **MongoDB, Express, React, Node.js & Bootstrap**.
 
