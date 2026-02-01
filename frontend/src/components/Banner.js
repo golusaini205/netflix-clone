@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useEffect, useState } from "react";
 import YouTube from "react-youtube";
 import axios from "../api/axios";
 import requests from "../api/requests";
@@ -8,7 +7,7 @@ import "./Banner.css";
 function Banner() {
   const [movie, setMovie] = useState(null);
   const [trailerUrl, setTrailerUrl] = useState("");
-  const { user } = useContext(AuthContext);
+  
 
 
 const handlePlay = async () => {
