@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 
 // Create app FIRST
@@ -14,6 +15,10 @@ app.use(express.json());
 const authRoutes = require("./routes/auth");
 const watchlistRoutes = require("./routes/watchlist");
 
+app.use(express.static(path.join(__dirname, '../frontend/build')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+});
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/watchlist", watchlistRoutes);
