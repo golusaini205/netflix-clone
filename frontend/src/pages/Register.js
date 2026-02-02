@@ -1,14 +1,18 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { Container, Card, Form, Button } from "react-bootstrap";
+
+// Backend base URL: env in production, localhost in development
+const API_BASE =
+  process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
 
 function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const API = "http://localhost:3000/api/auth";
+  const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -17,14 +21,14 @@ function Register() {
 
     try {
       setLoading(true);
-      await axios.post(`${API}/register`, {
+      await axios.post(`${API_BASE}/api/auth/register`, {
         username,
         email,
         password
       });
 
       alert("Account created successfully 🎉");
-      window.location.href = "/login";
+      navigate("/login");
     } catch (error) {
       if (error.response && error.response.data && error.response.data.msg) {
         alert(error.response.data.msg);
@@ -78,7 +82,7 @@ function Register() {
           Already have an account?{" "}
           <span
             style={{ color: "white", cursor: "pointer" }}
-            onClick={() => (window.location.href = "/login")}
+            onClick={() => navigate("/login")}
           >
             Sign In
           </span>
